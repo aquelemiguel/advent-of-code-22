@@ -1,0 +1,8 @@
+[package]
+name = "advent-of-code-22"
+version = "0.1.0"
+authors = ["Miguel Mano <aquelemiguel@gmail.com>"]
+edition = "2021"
+default-run = "advent-of-code-22"
+
+[dependencies]
