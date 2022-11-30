@@ -1,7 +1,19 @@
-# Advent of Code '22
+# 🎄 advent of code '22
 
-## Usage
+### 🦌 usage
 
-```shell
+```
 cargo run --bin day[01-25]
+```
+
+### 🦌 tests
+
+```
+cargo test [--bin day[01-25]]
+```
+
+### 🦌 happy
+
+```
+holidays
 ```
