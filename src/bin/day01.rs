@@ -25,26 +25,3 @@ fn read_input(file_name: &str) -> Vec<Vec<i32>> {
         })
         .collect()
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::*;
-
-    #[test]
-    fn test_p1() {
-        let input_example = read_input("input/day01-example");
-        let input_full = read_input("input/day01-full");
-
-        assert_eq!(get_n_most_caloric(&input_example, 1), 24000);
-        assert_eq!(get_n_most_caloric(&input_full, 1), 72511);
-    }
-
-    #[test]
-    fn test_p2() {
-        let input_example = read_input("input/day01-example");
-        let input_full = read_input("input/day01-full");
-
-        assert_eq!(get_n_most_caloric(&input_example, 3), 45000);
-        assert_eq!(get_n_most_caloric(&input_full, 3), 212117);
-    }
-}
