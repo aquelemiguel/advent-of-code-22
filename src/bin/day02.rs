@@ -26,8 +26,5 @@ fn main() {
 
 fn read_input(file_name: &str) -> Vec<String> {
     let s = fs::read_to_string(file_name).unwrap();
-
-    s.lines()
-        .map(|l| l.split(' ').map(|c| c.to_string()).collect())
-        .collect_vec()
+    s.lines().map(|l| l.split(' ').collect()).collect_vec()
 }
