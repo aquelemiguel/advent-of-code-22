@@ -1,15 +1,19 @@
+use itertools::Itertools;
 use std::fs;
-
-fn get_n_most_caloric(calories: &[Vec<i32>], n: usize) -> i32 {
-    let mut sums: Vec<i32> = calories.iter().map(|c| c.iter().sum()).collect();
-    sums.sort();
-    sums[sums.len() - n..].iter().sum()
-}
 
 fn main() {
     let calories = read_input("input/day01-full");
-    println!("p1: {}", get_n_most_caloric(&calories, 1));
-    println!("p2: {}", get_n_most_caloric(&calories, 3));
+
+    let calories = calories
+        .iter()
+        .map(|c| c.iter().sum::<i32>())
+        .sorted()
+        .rev()
+        .take(3)
+        .collect_vec();
+
+    println!("p1: {}", calories[0]);
+    println!("p2: {}", calories[..3].iter().sum::<i32>());
 }
 
 fn read_input(file_name: &str) -> Vec<Vec<i32>> {
