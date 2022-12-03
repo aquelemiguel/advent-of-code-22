@@ -2,9 +2,12 @@ use itertools::Itertools;
 use std::collections::HashSet;
 use std::fs;
 
-fn convert_to_unicode(c: char) -> u32 {
-    let delta = if c.is_lowercase() { 96 } else { 38 };
-    c as u32 - delta
+fn priority(c: char) -> usize {
+    match c {
+        'a'..='z' => c as usize - 'a' as usize + 1,
+        'A'..='Z' => c as usize - 'A' as usize + 27,
+        _ => unreachable!(),
+    }
 }
 
 fn main() {
@@ -21,11 +24,11 @@ fn main() {
         })
         .map(|r| {
             let common = *r[0].intersection(&r[1]).next().unwrap();
-            convert_to_unicode(common)
+            priority(common)
         })
         .collect_vec();
 
-    println!("p1: {}", items.iter().sum::<u32>());
+    println!("p1: {}", items.iter().sum::<usize>());
 
     let badges = rucksacks
         .chunks(3)
@@ -37,12 +40,12 @@ fn main() {
         .flat_map(|c| {
             c[0].iter()
                 .filter(|k| c.iter().all(|s| s.contains(k)))
-                .map(|k| convert_to_unicode(*k))
+                .map(|k| priority(*k))
                 .collect_vec()
         })
         .collect_vec();
 
-    println!("p2: {}", badges.iter().sum::<u32>());
+    println!("p2: {}", badges.iter().sum::<usize>());
 }
 
 fn read_input(file_name: &str) -> Vec<String> {
