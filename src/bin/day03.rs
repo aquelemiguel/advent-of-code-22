@@ -10,19 +10,19 @@ fn convert_to_unicode(c: char) -> u32 {
 fn main() {
     let rucksacks = read_input("input/day03-full");
 
-    let priorities = rucksacks
+    let items = rucksacks
         .iter()
         .map(|r| {
             r.chars()
                 .chunks(r.len() / 2)
                 .into_iter()
-                .map(|c| HashSet::from_iter(c))
+                .map(HashSet::from_iter)
                 .collect::<Vec<HashSet<char>>>()
         })
         .map(|r| convert_to_unicode(*r[0].intersection(&r[1]).next().unwrap()))
         .collect_vec();
 
-    println!("p1: {}", priorities.iter().sum::<u32>());
+    println!("p1: {}", items.iter().sum::<u32>());
 
     let badges = rucksacks
         .chunks(3)
@@ -31,13 +31,12 @@ fn main() {
                 .map(|s| HashSet::from_iter(s.chars()))
                 .collect::<Vec<HashSet<char>>>()
         })
-        .map(|c| {
+        .flat_map(|c| {
             c[0].iter()
                 .filter(|k| c.iter().all(|s| s.contains(k)))
                 .map(|k| convert_to_unicode(*k))
                 .collect_vec()
         })
-        .flatten()
         .collect_vec();
 
     println!("p2: {}", badges.iter().sum::<u32>());
