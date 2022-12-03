@@ -19,7 +19,10 @@ fn main() {
                 .map(HashSet::from_iter)
                 .collect::<Vec<HashSet<char>>>()
         })
-        .map(|r| convert_to_unicode(*r[0].intersection(&r[1]).next().unwrap()))
+        .map(|r| {
+            let common = *r[0].intersection(&r[1]).next().unwrap();
+            convert_to_unicode(common)
+        })
         .collect_vec();
 
     println!("p1: {}", items.iter().sum::<u32>());
