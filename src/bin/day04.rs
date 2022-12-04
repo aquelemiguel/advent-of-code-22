@@ -12,11 +12,11 @@ fn overlaps_any(r1: &RangeInclusive<usize>, r2: &RangeInclusive<usize>) -> bool 
 fn main() {
     let pairs = read_input("input/day04-full");
 
-    let contained = pairs.iter().filter(|p| overlaps_all(&p.0, &p.1)).count();
-    println!("p1: {}", contained);
+    let overlaps = pairs.iter().filter(|p| overlaps_all(&p.0, &p.1)).count();
+    println!("p1: {}", overlaps);
 
-    let contained = pairs.iter().filter(|p| overlaps_any(&p.0, &p.1)).count();
-    println!("p2: {}", contained);
+    let overlaps = pairs.iter().filter(|p| overlaps_any(&p.0, &p.1)).count();
+    println!("p2: {}", overlaps);
 }
 
 fn read_input(file_name: &str) -> Vec<(RangeInclusive<usize>, RangeInclusive<usize>)> {
