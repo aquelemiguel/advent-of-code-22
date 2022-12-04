@@ -1,6 +1,9 @@
 use itertools::Itertools;
-use std::collections::HashSet;
 use std::fs;
+
+fn common(a: &str, b: &str) -> String {
+    a.chars().filter(|c| b.contains(*c)).join("")
+}
 
 fn priority(c: char) -> usize {
     match c {
@@ -16,15 +19,8 @@ fn main() {
     let items = rucksacks
         .iter()
         .map(|r| {
-            r.chars()
-                .chunks(r.len() / 2)
-                .into_iter()
-                .map(HashSet::from_iter)
-                .collect::<Vec<HashSet<char>>>()
-        })
-        .map(|r| {
-            let common = *r[0].intersection(&r[1]).next().unwrap();
-            priority(common)
+            let (r1, r2) = r.split_at(r.len() / 2);
+            priority(common(r1, r2).chars().next().unwrap())
         })
         .collect_vec();
 
@@ -33,15 +29,8 @@ fn main() {
     let badges = rucksacks
         .chunks(3)
         .map(|c| {
-            c.iter()
-                .map(|s| HashSet::from_iter(s.chars()))
-                .collect::<Vec<HashSet<char>>>()
-        })
-        .flat_map(|c| {
-            c[0].iter()
-                .filter(|k| c.iter().all(|s| s.contains(k)))
-                .map(|k| priority(*k))
-                .collect_vec()
+            let r = common(&common(&c[0], &c[1]), &c[2]);
+            priority(r.chars().next().unwrap())
         })
         .collect_vec();
 
