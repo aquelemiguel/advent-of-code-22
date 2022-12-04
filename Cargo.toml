@@ -7,3 +7,4 @@ default-run = "advent-of-code-22"
 
 [dependencies]
 itertools = "0.10.5"
+regex = "1"
