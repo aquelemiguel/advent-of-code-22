@@ -2,7 +2,7 @@ use itertools::Itertools;
 use std::{collections::HashMap, fs};
 
 fn main() {
-    let guide = read_input("input/day02-full");
+    let guide = read_input("input/02.in");
 
     let points = HashMap::from([
         ("AX".to_string(), (4, 3)),

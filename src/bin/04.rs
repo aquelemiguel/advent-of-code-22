@@ -10,7 +10,7 @@ fn overlaps_any(r1: &RangeInclusive<usize>, r2: &RangeInclusive<usize>) -> bool 
 }
 
 fn main() {
-    let pairs = read_input("input/day04-full");
+    let pairs = read_input("input/04.in");
 
     let overlaps = pairs.iter().filter(|p| overlaps_all(&p.0, &p.1)).count();
     println!("p1: {}", overlaps);

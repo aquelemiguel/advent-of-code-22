@@ -3,5 +3,5 @@
 ### ❄️ usage
 
 ```
-cargo run --bin day[01-25]
+cargo run --bin [01-25]
 ```

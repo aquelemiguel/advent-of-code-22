@@ -2,7 +2,7 @@ use itertools::Itertools;
 use std::fs;
 
 fn main() {
-    let calories = read_input("input/day01-full");
+    let calories = read_input("input/01.in");
 
     let calories = calories
         .iter()

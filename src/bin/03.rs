@@ -14,7 +14,7 @@ fn priority(c: char) -> usize {
 }
 
 fn main() {
-    let rucksacks = read_input("input/day03-full");
+    let rucksacks = read_input("input/03.in");
 
     let items = rucksacks
         .iter()
