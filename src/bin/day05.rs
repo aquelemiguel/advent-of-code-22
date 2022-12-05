@@ -9,7 +9,7 @@ fn get_top(st: &[Crate]) -> String {
     st.iter().map(|s| s.last().unwrap()).join("")
 }
 
-fn run_crane(st: &mut [Crate], p: &Procedure, v2: bool) {
+fn step(st: &mut [Crate], p: &Procedure, v2: bool) {
     let range = (st[p.1 - 1].len() - p.0)..st[p.1 - 1].len();
 
     let c = if v2 {
@@ -22,47 +22,47 @@ fn run_crane(st: &mut [Crate], p: &Procedure, v2: bool) {
 }
 
 fn main() {
-    let (stacks, procedures) = parse_input("input/05.in");
-    let (mut s1, mut s2) = (stacks.clone(), stacks);
+    let (st, procs) = parse_input("input/05.in");
+    let (mut s1, mut s2) = (st.clone(), st);
 
-    for procedure in procedures.iter() {
-        run_crane(&mut s1, procedure, false);
+    for proc in procs.iter() {
+        step(&mut s1, proc, false);
     }
-    println!("p1: {:?}", get_top(&s1));
+    println!("p1: {}", get_top(&s1));
 
-    for procedure in procedures.iter() {
-        run_crane(&mut s2, procedure, true)
+    for proc in procs.iter() {
+        step(&mut s2, proc, true)
     }
-    println!("p2: {:?}", get_top(&s2));
+    println!("p2: {}", get_top(&s2));
 }
 
 fn parse_input(file_name: &str) -> (Vec<Crate>, Vec<Procedure>) {
     let s = fs::read_to_string(file_name).unwrap();
-    let (stacks, procs) = s.split_once("\r\n\r\n").unwrap();
+    let (st, procs) = s.split_once("\r\n\r\n").unwrap();
 
-    let idx_line = stacks.lines().rev().next().unwrap().trim();
-    let n_stacks = idx_line.chars().last().unwrap().to_digit(10).unwrap();
+    let idx_line = st.lines().rev().next().unwrap().trim();
+    let n = idx_line.chars().last().unwrap().to_digit(10).unwrap();
 
-    let mut x = vec![vec![]; n_stacks as usize];
+    let mut x = vec![vec![]; n as usize];
     let mut y: Vec<Procedure> = vec![];
 
-    for stack in stacks.lines().rev().skip(1) {
-        for m in stack.match_indices(|c: char| c.is_uppercase()) {
+    for s in st.lines().rev().skip(1) {
+        for m in s.match_indices(|c: char| c.is_uppercase()) {
             x[(m.0 + 1) / 4].push(m.1.to_string());
         }
     }
 
     let re = Regex::new(r"move (\d+) from (\d+) to (\d+)").unwrap();
 
-    for line in procs.lines() {
-        let caps = re.captures(line).unwrap();
+    for l in procs.lines() {
+        let caps = re.captures(l).unwrap();
 
-        let procedure = (1..=3)
+        let proc = (1..=3)
             .map(|i| caps[i].parse::<usize>().unwrap())
             .collect_tuple::<Procedure>()
             .unwrap();
 
-        y.push(procedure);
+        y.push(proc);
     }
 
     (x, y)
