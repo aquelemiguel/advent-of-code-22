@@ -2,13 +2,12 @@ use itertools::Itertools;
 use std::fs;
 
 fn marker(buffer: &[char], n: usize) -> usize {
-    buffer
+    let mut it = buffer
         .windows(n)
         .enumerate()
-        .filter(|(_, w)| w.iter().duplicates().collect_vec().is_empty())
-        .next()
-        .unwrap()
-        .0
+        .filter(|(_, w)| w.iter().duplicates().collect_vec().is_empty());
+
+    it.next().unwrap().0 + n
 }
 
 fn main() {
