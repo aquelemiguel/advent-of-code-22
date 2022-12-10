@@ -4,18 +4,13 @@ use std::{collections::HashSet, fs};
 type Knot = (i32, i32);
 
 fn follow(head: &Knot, tail: &Knot) -> Knot {
-    let mut knot = *tail;
-
     if (head.0 - tail.0).abs() <= 1 && (head.1 - tail.1).abs() <= 1 {
-        return knot;
+        return *tail;
     }
-    if head.0 != tail.0 {
-        knot.0 = tail.0 + (head.0 - tail.0).signum();
-    }
-    if head.1 != tail.1 {
-        knot.1 = tail.1 + (head.1 - tail.1).signum();
-    }
-    knot
+    (
+        tail.0 + (head.0 - tail.0).signum(),
+        tail.1 + (head.1 - tail.1).signum(),
+    )
 }
 
 fn move_head(head: &Knot, dir: char) -> Knot {
