@@ -4,7 +4,7 @@ use std::{collections::HashSet, fs};
 type Knot = (i32, i32);
 
 fn follow(head: &Knot, tail: &Knot) -> Knot {
-    let mut knot = tail.clone();
+    let mut knot = *tail;
 
     if (head.0 - tail.0).abs() <= 1 && (head.1 - tail.1).abs() <= 1 {
         return knot;
