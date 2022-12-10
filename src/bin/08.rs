@@ -59,38 +59,34 @@ fn main() {
 
     for i in 1..mx.len() - 1 {
         for j in 1..mx.len() - 1 {
-            let mut scenic = (0, 0, 0, 0);
+            let mut scenic = (1, 1, 1, 1);
 
-            for k in (0..i).rev() {
+            for k in (0..i - 1).rev() {
+                if mx[k][j] >= mx[i][j] {
+                    break;
+                }
                 scenic.0 += 1;
-
-                if mx[k][j] >= mx[i][j] {
-                    break;
-                }
             }
 
-            for k in (0..j).rev() {
+            for k in (0..j - 1).rev() {
+                if mx[i][k] >= mx[i][j] {
+                    break;
+                }
                 scenic.1 += 1;
+            }
 
+            for k in (j + 1)..(mx.len() - 1) {
                 if mx[i][k] >= mx[i][j] {
                     break;
                 }
-            }
-
-            for k in (j + 1)..mx.len() {
                 scenic.2 += 1;
-
-                if mx[i][k] >= mx[i][j] {
-                    break;
-                }
             }
 
-            for k in (i + 1)..mx.len() {
-                scenic.3 += 1;
-
+            for k in (i + 1)..(mx.len() - 1) {
                 if mx[k][j] >= mx[i][j] {
                     break;
                 }
+                scenic.3 += 1;
             }
 
             scenics.push(scenic);
