@@ -59,40 +59,40 @@ fn main() {
 
     for i in 1..mx.len() - 1 {
         for j in 1..mx.len() - 1 {
-            let mut scenic = (1, 1, 1, 1);
+            let mut scenic = vec![1, 1, 1, 1];
 
             for k in (0..i - 1).rev() {
                 if mx[k][j] >= mx[i][j] {
                     break;
                 }
-                scenic.0 += 1;
+                scenic[0] += 1;
             }
 
             for k in (0..j - 1).rev() {
                 if mx[i][k] >= mx[i][j] {
                     break;
                 }
-                scenic.1 += 1;
+                scenic[1] += 1;
             }
 
             for k in (j + 1)..(mx.len() - 1) {
                 if mx[i][k] >= mx[i][j] {
                     break;
                 }
-                scenic.2 += 1;
+                scenic[2] += 1;
             }
 
             for k in (i + 1)..(mx.len() - 1) {
                 if mx[k][j] >= mx[i][j] {
                     break;
                 }
-                scenic.3 += 1;
+                scenic[3] += 1;
             }
 
             scenics.push(scenic);
         }
     }
 
-    let highest = scenics.iter().map(|x| x.0 * x.1 * x.2 * x.3).max().unwrap();
+    let highest: u32 = scenics.iter().map(|t| t.iter().product()).max().unwrap();
     println!("p2: {}", highest);
 }
