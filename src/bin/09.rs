@@ -29,16 +29,14 @@ fn move_head(head: &Knot, dir: char) -> Knot {
 }
 
 fn main() {
-    let cmds = read_input("input/09.in");
-
     let mut knots = vec![(0, 0); 10];
     let mut pos = vec![HashSet::<Knot>::new(); 10];
 
-    for cmd in cmds.iter() {
+    for cmd in read_input("input/09.in") {
         for _ in 0..cmd.1 {
             knots[0] = move_head(&knots[0], cmd.0);
 
-            for (i, _) in knots.clone().iter().enumerate().skip(1) {
+            for i in 1..knots.len() {
                 knots[i] = follow(&knots[i - 1], &knots[i]);
                 pos[i].insert(knots[i]);
             }
