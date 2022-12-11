@@ -59,40 +59,28 @@ fn main() {
 
     for i in 1..mx.len() - 1 {
         for j in 1..mx.len() - 1 {
-            let mut scenic = vec![1, 1, 1, 1];
+            let up = (0..i - 1)
+                .rev()
+                .position(|k| mx[k][j] >= mx[i][j])
+                .unwrap_or((0..i - 1).len());
 
-            for k in (0..i - 1).rev() {
-                if mx[k][j] >= mx[i][j] {
-                    break;
-                }
-                scenic[0] += 1;
-            }
+            let left = (0..j - 1)
+                .rev()
+                .position(|k| mx[i][k] >= mx[i][j])
+                .unwrap_or((0..j - 1).len());
 
-            for k in (0..j - 1).rev() {
-                if mx[i][k] >= mx[i][j] {
-                    break;
-                }
-                scenic[1] += 1;
-            }
+            let right = ((j + 1)..(mx.len() - 1))
+                .position(|k| mx[i][k] >= mx[i][j])
+                .unwrap_or(((j + 1)..(mx.len() - 1)).len());
 
-            for k in (j + 1)..(mx.len() - 1) {
-                if mx[i][k] >= mx[i][j] {
-                    break;
-                }
-                scenic[2] += 1;
-            }
+            let down = ((i + 1)..(mx.len() - 1))
+                .position(|k| mx[k][j] >= mx[i][j])
+                .unwrap_or(((i + 1)..(mx.len() - 1)).len());
 
-            for k in (i + 1)..(mx.len() - 1) {
-                if mx[k][j] >= mx[i][j] {
-                    break;
-                }
-                scenic[3] += 1;
-            }
-
-            scenics.push(scenic);
+            scenics.push(vec![up + 1, left + 1, right + 1, down + 1]);
         }
     }
 
-    let highest: u32 = scenics.iter().map(|t| t.iter().product()).max().unwrap();
+    let highest: usize = scenics.iter().map(|t| t.iter().product()).max().unwrap();
     println!("p2: {}", highest);
 }
