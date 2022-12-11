@@ -62,20 +62,20 @@ fn main() {
             let up = (0..i - 1)
                 .rev()
                 .position(|k| mx[k][j] >= mx[i][j])
-                .unwrap_or((0..i - 1).len());
+                .unwrap_or_else(|| (0..i - 1).len());
 
             let left = (0..j - 1)
                 .rev()
                 .position(|k| mx[i][k] >= mx[i][j])
-                .unwrap_or((0..j - 1).len());
+                .unwrap_or_else(|| (0..j - 1).len());
 
             let right = ((j + 1)..(mx.len() - 1))
                 .position(|k| mx[i][k] >= mx[i][j])
-                .unwrap_or(((j + 1)..(mx.len() - 1)).len());
+                .unwrap_or_else(|| ((j + 1)..(mx.len() - 1)).len());
 
             let down = ((i + 1)..(mx.len() - 1))
                 .position(|k| mx[k][j] >= mx[i][j])
-                .unwrap_or(((i + 1)..(mx.len() - 1)).len());
+                .unwrap_or_else(|| ((i + 1)..(mx.len() - 1)).len());
 
             scenics.push(vec![up + 1, left + 1, right + 1, down + 1]);
         }
