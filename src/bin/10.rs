@@ -2,35 +2,34 @@ use itertools::Itertools;
 use std::fs;
 
 fn main() {
-    let instr = fs::read_to_string("input/10.in").unwrap();
+    let instrs = fs::read_to_string("input/10.in").unwrap();
     let mut reg = 1;
+    let mut clock: Vec<i32> = vec![1];
 
-    let mut clocks: Vec<i32> = vec![1];
+    for instr in instrs.lines() {
+        let instr = &instr.split_whitespace().collect_vec()[..];
 
-    for line in instr.lines() {
-        let cmd = &line.split_whitespace().collect_vec()[..];
-
-        match cmd {
+        match instr {
             ["addx", v] => {
                 let v = v.parse::<i32>().unwrap();
-                clocks.extend_from_slice(&[reg, reg + v]);
+                clock.extend_from_slice(&[reg, reg + v]);
                 reg += v;
             }
             ["noop"] => {
-                clocks.push(reg);
+                clock.push(reg);
             }
             _ => unreachable!(),
         }
     }
 
-    let strength = vec![19, 59, 99, 139, 179, 219]
+    let strength = vec![20, 60, 100, 140, 180, 220]
         .iter()
-        .map(|i| (i + 1) * clocks[*i as usize])
+        .map(|i| i * clock[*i as usize])
         .sum::<i32>();
 
     println!("p1: {:?}\np2:", strength);
 
-    let x = clocks
+    let x = clock
         .iter()
         .enumerate()
         .map(|(i, v)| {
