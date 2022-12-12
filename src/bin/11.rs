@@ -13,9 +13,9 @@ struct Monkey {
 
 impl Monkey {
     fn inspect(&mut self) -> Option<u128> {
-        self.items.pop_front().and_then(|item| {
+        self.items.pop_front().map(|item| {
             self.inspects += 1;
-            Some(item)
+            item
         })
     }
 
