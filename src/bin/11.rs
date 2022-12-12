@@ -54,10 +54,10 @@ fn monkey_business(monkeys: &[Monkey]) -> u128 {
 
 fn next_round(monkeys: &mut [Monkey], panicking: bool) {
     for src in 0..monkeys.len() {
-        while let Some(old_worry) = monkeys[src].inspect() {
-            let new_worry = monkeys[src].calculate(old_worry, panicking);
-            let dest = monkeys[src].throw_to(new_worry);
-            monkeys[dest as usize].items.push_back(new_worry);
+        while let Some(old) = monkeys[src].inspect() {
+            let new = monkeys[src].calculate(old, panicking);
+            let dest = monkeys[src].throw_to(new);
+            monkeys[dest as usize].items.push_back(new);
         }
     }
 }
@@ -72,7 +72,7 @@ fn main() {
     println!("p1: {:?}", monkey_business(&m1));
 
     for _ in 0..10_000 {
-        next_round(&mut m2, true)
+        next_round(&mut m2, true);
     }
     println!("p2: {:?}", monkey_business(&m2));
 }
