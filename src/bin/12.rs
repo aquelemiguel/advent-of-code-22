@@ -14,7 +14,7 @@ fn neighbors(mx: &[Vec<u8>], v: CPair) -> Vec<CPair> {
         let (i, j) = ((dx + v.0 as i32) as usize, (dy + v.1 as i32) as usize);
 
         if let Some(next) = mx.get(i).and_then(|r| r.get(j)) {
-            if mx[v.0][v.1] == *next || mx[v.0][v.1] + 1 == *next {
+            if mx[v.0][v.1] + 1 >= *next {
                 neighbors.push((i, j));
             }
         }
@@ -41,10 +41,11 @@ fn bfs(mx: &[Vec<u8>], root: CPair, target: CPair) -> Option<(CPair, usize)> {
     None
 }
 
-fn find_index(mx: &Vec<Vec<u8>>, search: u8) -> Option<CPair> {
+fn find_all(mx: &Vec<Vec<u8>>, search: u8) -> Vec<CPair> {
     (0..mx.len())
         .cartesian_product(0..mx[0].len())
-        .find(|&(i, j)| mx[i][j] == search)
+        .filter(|&(i, j)| mx[i][j] == search)
+        .collect()
 }
 
 fn main() {
@@ -55,13 +56,23 @@ fn main() {
         .map(|line| line.as_bytes().iter().cloned().collect_vec())
         .collect_vec();
 
-    let root = find_index(&mx, b'S').unwrap();
+    let root = find_all(&mx, b'S')[0];
     mx[root.0][root.1] = b'a';
 
-    let target = find_index(&mx, b'E').unwrap();
+    let target = find_all(&mx, b'E')[0];
     mx[target.0][target.1] = b'z';
 
     if let Some(res) = bfs(&mx, root, target) {
         println!("p1: {}", res.1);
     }
+
+    let mut x = vec![];
+
+    for root in find_all(&mx, b'a').into_iter() {
+        if let Some(res) = bfs(&mx, root, target) {
+            x.push(res.1);
+        }
+    }
+
+    println!("p2: {}", x.iter().min().unwrap());
 }
