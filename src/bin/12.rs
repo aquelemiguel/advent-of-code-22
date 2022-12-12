@@ -1,88 +1,67 @@
 use itertools::Itertools;
 use std::{
-    collections::{HashMap, HashSet, VecDeque},
+    collections::{HashSet, VecDeque},
     fs,
 };
 
-type Coords = (usize, usize);
+type CPair = (usize, usize);
 
-fn find_index(mx: &[Vec<char>], elem: char) -> Option<Coords> {
-    for (i, _) in mx.iter().enumerate() {
-        for (j, v) in mx[i].iter().enumerate() {
-            if *v == elem {
-                return Some((i, j));
+fn neighbors(mx: &[Vec<u8>], v: CPair) -> Vec<CPair> {
+    let deltas = vec![(-1, 0), (0, 1), (1, 0), (0, -1)];
+    let mut neighbors = vec![];
+
+    for (dx, dy) in deltas.iter() {
+        let (i, j) = ((dx + v.0 as i32) as usize, (dy + v.1 as i32) as usize);
+
+        if let Some(next) = mx.get(i).and_then(|r| r.get(j)) {
+            if mx[v.0][v.1] == *next || mx[v.0][v.1] + 1 == *next {
+                neighbors.push((i, j));
+            }
+        }
+    }
+    neighbors
+}
+
+fn bfs(mx: &[Vec<u8>], root: CPair, target: CPair) -> Option<(CPair, usize)> {
+    let mut queue = VecDeque::from([(root, 0)]);
+    let mut visited: HashSet<CPair> = HashSet::from([root]);
+
+    while let Some((v, n)) = queue.pop_back() {
+        if v == target {
+            return Some((v, n));
+        }
+
+        for w in neighbors(mx, v).into_iter() {
+            if !visited.contains(&w) {
+                visited.insert(w);
+                queue.push_front((w, n + 1));
             }
         }
     }
     None
 }
 
-fn neighbors(mx: &[Vec<char>], v: &Coords) -> Vec<Coords> {
-    let deltas = vec![(-1, 0), (0, 1), (1, 0), (0, -1)];
-    let r1 = 0..mx.len();
-    let r2 = 0..mx[0].len();
-
-    deltas
-        .iter()
-        .map(|d| (v.0 as i32 + d.0, v.1 as i32 + d.1))
-        .filter(|(i, j)| r1.contains(&(*i as usize)) && r2.contains(&(*j as usize)))
-        .map(|(i, j)| (i as usize, j as usize))
-        .filter(|(i, j)| {
-            let curr = mx[v.0][v.1] as usize;
-            let next = mx[*i][*j] as usize;
-            curr == next || curr + 1 == next
-        })
-        .collect_vec()
-}
-
-fn get_path_len(parents: &HashMap<Coords, Coords>, target: &Coords) -> usize {
-    let mut path = vec![target];
-
-    while let Some(p) = parents.get(path.last().unwrap()) {
-        path.push(p);
-    }
-    // println!("{:?}", parents);
-    path.len() - 1
-}
-
-fn bfs(mx: &[Vec<char>], root: &Coords, target: &Coords) -> HashMap<Coords, Coords> {
-    let mut queue: VecDeque<Coords> = VecDeque::from([*root]);
-    let mut explored: HashSet<Coords> = HashSet::from([*root]);
-    let mut parents: HashMap<Coords, Coords> = HashMap::new();
-
-    while !queue.is_empty() {
-        let v = queue.pop_back().unwrap();
-
-        if v == *target {
-            return parents;
-        }
-
-        for w in neighbors(mx, &v).into_iter() {
-            if !explored.contains(&w) {
-                explored.insert(w);
-                parents.insert(w, v);
-                queue.push_front(w);
-            }
-        }
-    }
-    parents
+fn find_index(mx: &Vec<Vec<u8>>, search: u8) -> Option<CPair> {
+    (0..mx.len())
+        .cartesian_product(0..mx[0].len())
+        .find(|&(i, j)| mx[i][j] == search)
 }
 
 fn main() {
-    let elev = fs::read_to_string("input/12.in").unwrap();
-    let mut elev = elev
+    let mx = fs::read_to_string("input/12.in").unwrap();
+
+    let mut mx = mx
         .lines()
-        .map(|line| line.chars().collect_vec())
+        .map(|line| line.as_bytes().iter().cloned().collect_vec())
         .collect_vec();
 
-    let root = find_index(&elev, 'S').unwrap();
-    elev[root.0][root.1] = 'a';
-    println!("{:?}", root);
+    let root = find_index(&mx, b'S').unwrap();
+    mx[root.0][root.1] = b'a';
 
-    let target = find_index(&elev, 'E').unwrap();
-    elev[target.0][target.1] = 'z';
-    println!("{:?}", target);
+    let target = find_index(&mx, b'E').unwrap();
+    mx[target.0][target.1] = b'z';
 
-    let parents = bfs(&elev, &root, &target);
-    println!("p1: {:?}", get_path_len(&parents, &target));
+    if let Some(res) = bfs(&mx, root, target) {
+        println!("p1: {}", res.1);
+    }
 }
