@@ -78,59 +78,61 @@ fn main() {
 }
 
 fn parse_monkeys(file_name: &str) -> Vec<Monkey> {
-    let monkeys = fs::read_to_string(file_name).unwrap();
+    let input = fs::read_to_string(file_name).unwrap();
+    let re = Regex::new(
+        r"(?x)
+        Monkey \x20 .:\s*
+        Starting \x20 items: \x20 (.+)\s*
+        Operation: \x20 new \x20 = \x20 old \x20 (.) \x20 (.+)\s*
+        Test: \x20 divisible \x20 by \x20 (\d+)\s*
+        If \x20 true: \x20 throw \x20 to \x20 monkey \x20 (\d+)\s*
+        If \x20 false: \x20 throw \x20 to \x20 monkey \x20 (\d+)",
+    )
+    .unwrap();
 
-    let monkeys = monkeys
+    let input = input
         .lines()
         .filter_map(|l| (!l.is_empty()).then_some(l.trim()))
         .collect_vec();
 
-    let mut monkeys = monkeys
-        .chunks(6)
-        .map(|c| {
-            let operation = Regex::new(r"Operation: new = old (.) (.+)")
-                .unwrap()
-                .captures(c[2])
-                .map(|cap| {
-                    let op = cap.get(1).unwrap().as_str().chars().next().unwrap();
-                    match cap.get(2).unwrap().as_str() {
-                        "old" => ('^', 2),
-                        r_op => (op, r_op.parse::<u128>().unwrap()),
-                    }
-                })
-                .unwrap();
+    let mut monkeys: Vec<Monkey> = vec![];
 
-            let opless_str = vec![c[1], c[3], c[4], c[5]].join(" ");
-            let fields = Regex::new(r"(\d+)")
-                .unwrap()
-                .captures_iter(&opless_str)
-                .map(|cap| cap[1].parse::<u128>().unwrap())
-                .collect_vec();
+    for chunk in input.chunks(6) {
+        let chunk = chunk.join(" ");
+        let caps = re.captures(&chunk).unwrap();
 
-            let items = fields[..fields.len() - 3]
-                .iter()
-                .map(|i| *i)
-                .collect::<VecDeque<u128>>();
+        let items = caps[1]
+            .split(", ")
+            .map(|c| c.trim().parse::<u128>().unwrap())
+            .collect::<VecDeque<u128>>();
 
-            Monkey {
-                items,
-                operation,
-                throw: (
-                    fields[fields.len() - 3],
-                    fields[fields.len() - 2],
-                    fields[fields.len() - 1],
-                ),
-                inspects: 0,
-                modulus: None,
-            }
+        let operation = match &caps[3].trim() {
+            &"old" => ('^', 2),
+            r_op => (
+                caps[2].chars().next().unwrap(),
+                r_op.trim().parse::<u128>().unwrap(),
+            ),
+        };
+
+        let throw = (
+            caps[4].trim().parse::<u128>().unwrap(),
+            caps[5].trim().parse::<u128>().unwrap(),
+            caps[6].trim().parse::<u128>().unwrap(),
+        );
+
+        monkeys.push(Monkey {
+            items,
+            operation,
+            throw,
+            inspects: 0,
+            modulus: None,
         })
-        .collect_vec();
+    }
 
     let modulus = monkeys.iter().map(|monkey| monkey.throw.0).product();
 
     for monkey in monkeys.iter_mut() {
         monkey.modulus = Some(modulus);
     }
-
     monkeys
 }
