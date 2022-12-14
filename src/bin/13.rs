@@ -25,28 +25,26 @@ fn main() {
 }
 
 fn compare(a: &Value, b: &Value) -> Option<Ordering> {
-    if let (Some(a), Some(b)) = (a.as_u64(), b.as_u64()) {
-        match a.cmp(&b) {
+    match (a, b) {
+        (Value::Number(a), Value::Number(b)) => match a.as_u64().cmp(&b.as_u64()) {
             Ordering::Equal => None,
             order => Some(order),
-        }
-    } else if let (Some(a), Some(b)) = (a.as_array(), b.as_array()) {
-        if a.is_empty() || b.is_empty() {
-            match a.len().cmp(&b.len()) {
-                Ordering::Equal => None,
-                order => Some(order),
+        },
+        (Value::Array(a), Value::Array(b)) => {
+            if a.is_empty() || b.is_empty() {
+                match a.len().cmp(&b.len()) {
+                    Ordering::Equal => None,
+                    order => Some(order),
+                }
+            } else if let Some(v) = compare(&a[0], &b[0]) {
+                Some(v)
+            } else {
+                compare(&json!(a[1..]), &json!(b[1..]))
             }
-        } else if let Some(v) = compare(&a[0], &b[0]) {
-            Some(v)
-        } else {
-            compare(&json!(a[1..]), &json!(b[1..]))
         }
-    } else if let (Some(a), Some(b)) = (a.as_u64(), b.as_array()) {
-        compare(&json!(vec![a]), &json!(b))
-    } else if let (Some(a), Some(b)) = (a.as_array(), b.as_u64()) {
-        compare(&json!(a), &json!(vec![b]))
-    } else {
-        Some(Ordering::Greater)
+        (Value::Number(a), Value::Array(b)) => compare(&json!(vec![a]), &json!(b)),
+        (Value::Array(a), Value::Number(b)) => compare(&json!(a), &json!(vec![b])),
+        _ => Some(Ordering::Greater),
     }
 }
 
