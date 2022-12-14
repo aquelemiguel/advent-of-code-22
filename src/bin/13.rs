@@ -17,7 +17,7 @@ fn main() {
     println!("p1: {:?}", right);
 
     packets.extend([json!([[2]]), json!([[6]])]);
-    packets.sort_by(|a, b| compare(&a, &b).unwrap());
+    packets.sort_by(|a, b| compare(a, b).unwrap());
 
     let dp1 = packets.iter().position(|p| *p == json!([[2]])).unwrap() + 1;
     let dp2 = packets.iter().position(|p| *p == json!([[6]])).unwrap() + 1;
