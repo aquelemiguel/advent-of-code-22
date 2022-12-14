@@ -7,11 +7,8 @@ fn enough(rocks: &HashSet<CPair>, sand: &CPair, void: usize) -> bool {
     rocks.contains(&(500, 0)) || sand.1 >= void
 }
 
-fn drop_sand(rocks: &HashSet<CPair>) -> Option<CPair> {
+fn drop_sand(rocks: &HashSet<CPair>, void: usize) -> Option<CPair> {
     let mut sand = (500, 0);
-
-    let sy = rocks.iter().map(|r| r.1).sorted().collect_vec();
-    let void = *sy.last().unwrap();
 
     loop {
         if enough(rocks, &sand, void) {
@@ -33,12 +30,12 @@ fn drop_sand(rocks: &HashSet<CPair>) -> Option<CPair> {
     }
 }
 
-fn simulate(rocks: &HashSet<CPair>) -> usize {
+fn simulate(rocks: &HashSet<CPair>, void: usize) -> usize {
     let mut rocks = rocks.clone();
     let mut steps = 0;
 
     loop {
-        if let Some(sand) = drop_sand(&rocks) {
+        if let Some(sand) = drop_sand(&rocks, void) {
             rocks.insert(sand);
         } else {
             break steps;
@@ -66,15 +63,17 @@ fn main() {
             }
         }
     }
-    println!("p1: {}", simulate(&rocks));
 
     let sy = rocks.iter().map(|r| r.1).sorted().collect_vec();
-    let void = *sy.last().unwrap();
+    let mut void = *sy.last().unwrap();
+    println!("p1: {}", simulate(&rocks, void));
 
+    void += 2;
     for i in 0..1000 {
-        rocks.insert((i, void + 2));
+        rocks.insert((i, void));
     }
-    println!("p2: {}", simulate(&rocks));
+
+    println!("p2: {}", simulate(&rocks, void));
 }
 
 fn read_input(file_name: &str) -> Vec<Vec<CPair>> {
