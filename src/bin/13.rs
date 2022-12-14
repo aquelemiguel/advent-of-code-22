@@ -4,9 +4,9 @@ use std::{cmp::Ordering, fs};
 
 fn main() {
     let mut packets = read_input("input/13.in");
-    let packet_pairs = packets.chunks(2).map(|c| c.to_vec()).collect_vec();
+    let pairs = packets.chunks(2).map(|c| c.to_vec()).collect_vec();
 
-    let right = packet_pairs
+    let pairs = pairs
         .iter()
         .map(|p| compare(&p[0], &p[1]))
         .enumerate()
@@ -14,7 +14,7 @@ fn main() {
         .map(|(i, _)| i + 1)
         .sum::<usize>();
 
-    println!("p1: {:?}", right);
+    println!("p1: {:?}", pairs);
 
     packets.extend([json!([[2]]), json!([[6]])]);
     packets.sort_by(|a, b| compare(a, b).unwrap());
