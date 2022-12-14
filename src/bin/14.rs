@@ -72,7 +72,6 @@ fn main() {
     for i in 0..1000 {
         rocks.insert((i, void));
     }
-
     println!("p2: {}", simulate(&rocks, void));
 }
 
