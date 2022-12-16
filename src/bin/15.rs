@@ -5,6 +5,7 @@ use std::{
     fs,
 };
 
+const FIXED_ROW: i32 = 2_000_000;
 const LIMIT: i32 = 4_000_000;
 type CPair = (i32, i32);
 
@@ -12,37 +13,41 @@ fn manhattan(a: &CPair, b: &CPair) -> u32 {
     a.0.abs_diff(b.0) + a.1.abs_diff(b.1)
 }
 
-fn main() {
-    let sb = read_input("input/15.in");
-    let y = 2_000_000;
-
-    let mut ranges = vec![];
-
-    for (s, b) in sb.iter() {
-        let diag: i32 = manhattan(s, b) as i32;
-        let diff = (y - s.1).abs();
-
-        if diag >= diff {
-            let n_slice = (2 * (diag - diff + 1) - 1) as i32;
-            ranges.push((s.0 - (n_slice / 2), s.0 + (n_slice / 2)));
-        }
-    }
-
-    let min_x = *ranges.iter().map(|(x, _)| x).min().unwrap() as isize;
-    let max_x = *ranges.iter().map(|(_, y)| y).max().unwrap() as isize;
-
-    let extra = sb
-        .iter()
+fn already_there(sb: &[(CPair, CPair)]) -> usize {
+    sb.iter()
         .flat_map(|(s, b)| vec![s, b])
         .unique()
-        .filter(|(_, y)| *y == 2_000_000)
-        .count();
+        .filter(|(_, y)| *y == FIXED_ROW)
+        .count()
+}
+
+fn slice_range(sensor: &CPair, beacon: &CPair) -> Option<CPair> {
+    let diag = manhattan(sensor, beacon) as i32;
+    let diff = (FIXED_ROW - sensor.1).abs();
+
+    (diag >= diff).then(|| {
+        let n = (2 * (diag - diff + 1) - 1) as i32;
+        (sensor.0 - (n / 2), sensor.0 + (n / 2))
+    })
+}
+
+fn main() {
+    let sb = read_input("input/15.in");
+    let ranges = sb
+        .iter()
+        .filter_map(|(s, b)| slice_range(s, b))
+        .collect_vec();
+
+    let (min_x, max_x) = (
+        *ranges.iter().map(|(x, _)| x).min().unwrap() as isize,
+        *ranges.iter().map(|(_, y)| y).max().unwrap() as isize,
+    );
 
     let res = (min_x..=max_x)
         .filter(|i| ranges.iter().any(|(x, y)| (x..=y).contains(&&(*i as i32))))
         .count();
 
-    println!("p1: {}", res - extra);
+    println!("p1: {}", res - already_there(&sb));
 
     let mut diags: HashMap<CPair, u32> = HashMap::new();
     let mut lines: (HashSet<i32>, HashSet<i32>) = (HashSet::new(), HashSet::new());
